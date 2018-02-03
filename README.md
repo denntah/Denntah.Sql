@@ -40,43 +40,53 @@ Examples below will assume that property ```c``` is of type ```IDbConnection```
 
 ### Basic query
 a list of the given type
+
 ```c.Query<Person>("SELECT * FROM persons");```
 
 ### Assoc query
 a list of dictionary where key matches columns name
+
 ```c.QueryAssoc("SELECT id,first_name FROM persons");```
 
 ### Array query
 a list of array where index matches columns index
+
 ```c.QueryArray("SELECT id,first_name FROM persons");```
 
 ### Insert
-```var data = new Person
+```
+var data = new Person
 {
     FirstName = "Dennis",
     LastName = "Ahlquist",
     Gender = Gender.Male,
     DateCreated = DateTime.Now
-};```
+};
+```
 
 inserts ```data``` into table persons
+
 ```c.Insert("persons", data);```
 
 **OR (with Postgres lib, more db-specific libs comming!)**
 
 inserts ```data``` into table persons and returns auto-generated field id as int
+
 ```data.Id = c.Insert<int>("persons", data, "id");```
 
 ### Update
 updates table persons and set ```data``` where id=1
+
 ```c.Update("persons", data, "id=@Id", new { Id = 1 });```
 
 ### Delete
 deletes from table persons where first_name="Dennis"
+
 ```c.Delete("persons", "first_name=@FirstName", new { FirstName = "Dennis" });```
 
 ### Execute
 execute anything, returning rows affected
+
 ```c.Execute("TRUNCATE persons");```
 
 ## Important!
