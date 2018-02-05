@@ -1,9 +1,0 @@
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql\bin\Release\netcoreapp2.0\Denntah.Sql.deps.json
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql\bin\Release\netcoreapp2.0\Denntah.Sql.dll
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql\bin\Release\netcoreapp2.0\Denntah.Sql.pdb
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql\obj\Release\netcoreapp2.0\Denntah.Sql.csprojResolveAssemblyReference.cache
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql\obj\Release\netcoreapp2.0\Denntah.Sql.csproj.CoreCompileInputs.cache
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql\obj\Release\netcoreapp2.0\Denntah.Sql.AssemblyInfoInputs.cache
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql\obj\Release\netcoreapp2.0\Denntah.Sql.AssemblyInfo.cs
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql\obj\Release\netcoreapp2.0\Denntah.Sql.dll
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql\obj\Release\netcoreapp2.0\Denntah.Sql.pdb

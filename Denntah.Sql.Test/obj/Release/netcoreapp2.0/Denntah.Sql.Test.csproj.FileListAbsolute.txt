@@ -1,4 +1,0 @@
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql.Test\obj\Release\netcoreapp2.0\Denntah.Sql.Test.csprojResolveAssemblyReference.cache
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql.Test\obj\Release\netcoreapp2.0\Denntah.Sql.Test.csproj.CoreCompileInputs.cache
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql.Test\obj\Release\netcoreapp2.0\Denntah.Sql.Test.AssemblyInfoInputs.cache
-C:\Users\Dennta\Documents\Visual Studio 2017\Projects\Denntah.Sql\Denntah.Sql.Test\obj\Release\netcoreapp2.0\Denntah.Sql.Test.AssemblyInfo.cs
