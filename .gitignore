@@ -1,2 +1,4 @@
 Denntah.Sql.sln
 .vs
+**/bin
+**/obj
