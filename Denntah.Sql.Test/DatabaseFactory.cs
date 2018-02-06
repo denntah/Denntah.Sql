@@ -9,7 +9,7 @@ namespace Denntah.Sql.Test
     {
         public static NpgsqlConnection CreatePostgres()
         {
-            NpgsqlConnection connection = new NpgsqlConnection("CONNECTIONSTRING");
+            NpgsqlConnection connection = new NpgsqlConnection("Host=localhost;Port=5432;Database=test;User ID=postgres;Password=qwe123;");
 
             connection.Execute(@"
                 CREATE TABLE IF NOT EXISTS persons

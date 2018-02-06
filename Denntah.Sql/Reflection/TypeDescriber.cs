@@ -12,11 +12,6 @@ namespace Denntah.Sql.Reflection
     {
         public Type Type { get; private set; }
         public string Table { get; private set; }
-        /*public PropertyDescriber[] All { get; private set; }
-        public PropertyDescriber[] Keys { get; private set; }
-        public PropertyDescriber[] NonKeys { get; private set; }
-        public PropertyDescriber[] Writeable { get; private set; }
-        public PropertyDescriber[] Readable { get; private set; }*/
 
         private Hashtable _properties = new Hashtable();
 
