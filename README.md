@@ -8,10 +8,9 @@ Model used in example:
 ```
 public class Person
 {
-    public virtual long Id { get; set; }
+    public virtual int Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public virtual string FullName { get { return FirstName + " " + LastName; } }
     public int Age { get; set; }
     public Gender Gender { get; set; }
     public DateTime DateCreated { get; set; }
@@ -25,11 +24,9 @@ public enum Gender
 }
 ```
 
-Querying database and map to model:
+Querying database and map to model, assuming ```c``` is of type ```IDbConnection```:
 ```
-Person[] persons;
-using (IDbConnection c = DatabaseFactory.Create())
-    persons = c.Query<Person>("SELECT * FROM persons").ToArray();
+Person[] persons = c.Query<Person>("SELECT * FROM persons").ToArray();
 ```
 
 ```persons``` now contains an array of ```Person``` with data pulled from the database.
@@ -39,7 +36,7 @@ Quite simple, right? Check out more examples below. Don't forget to read the "Im
 
 
 ## Examples
-Examples below will assume that property ```c``` is of type ```IDbConnection```.
+Examples below will assume that ```c``` is of type ```IDbConnection```.
 
 ### Basic query
 a list of the given type
@@ -57,30 +54,38 @@ a list of array where index matches columns index
 ```c.QueryArray("SELECT id,first_name FROM persons");```
 
 ### Insert
+
+inserts ```document``` into table documents
 ```
-var data = new Person
+var document = new Document
+{
+    Id = Guid.NewGuid(),
+    Name = "foo.txt",
+    Data = Gender.Male,
+    DateCreated = DateTime.Now
+};
+
+c.Insert("documents", document);
+```
+
+
+Or if you have a table containing an auto generated id
+```
+var person = new Person
 {
     FirstName = "Dennis",
     LastName = "Ahlquist",
     Gender = Gender.Male,
     DateCreated = DateTime.Now
 };
+
+person.Id = c.Insert<int>("persons", person, "id");
 ```
 
-inserts ```data``` into table persons
-
-```c.Insert("persons", data);```
-
-**OR (with Postgres lib, more db-specific libs comming!)**
-
-inserts ```data``` into table persons and returns auto-generated field id as int
-
-```data.Id = c.Insert<int>("persons", data, "id");```
-
 ### Update
-updates table persons and set ```data``` where id=1
+updates table persons and set ```person``` where id=1
 
-```c.Update("persons", data, "id=@Id", new { Id = 1 });```
+```c.Update("persons", person, "id=@Id", new { Id = 1 });```
 
 ### Delete
 deletes from table persons where first_name="Dennis"
