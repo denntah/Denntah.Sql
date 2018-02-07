@@ -2,6 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <Authors>denntah</Authors>
+    <Company />
+    <Description>Database mapper that simplifies all kind of database communication. Currently just supports PostgreSQL.</Description>
+    <Copyright>2018 Dennis "denntah" Ahlquist</Copyright>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/denntah/Denntah.Sql</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/denntah/Denntah.Sql</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>mapper,orm,database</PackageTags>
+    <PackageReleaseNotes />
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
