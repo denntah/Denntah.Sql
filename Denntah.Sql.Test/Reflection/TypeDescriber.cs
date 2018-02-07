@@ -42,8 +42,8 @@ namespace Denntah.Sql.Test.Reflection
             TypeDescriber person = TypeHandler.Get<Person>();
             TypeDescriber document = TypeHandler.Get<Document>();
 
-            Assert.Equal(5, person.Writeable.Count());
-            Assert.Equal(4, document.Writeable.Count());
+            Assert.Equal(5, person.WriteableProperties.Count());
+            Assert.Equal(4, document.WriteableProperties.Count());
         }
 
         [Fact]
@@ -52,8 +52,8 @@ namespace Denntah.Sql.Test.Reflection
             TypeDescriber person = TypeHandler.Get<Person>();
             TypeDescriber document = TypeHandler.Get<Document>();
 
-            Assert.Equal(4, person.Readable.Count());
-            Assert.Equal(4, document.Readable.Count());
+            Assert.Equal(4, person.WriteableColumns.Count());
+            Assert.Equal(4, document.WriteableColumns.Count());
         }
 
         [Fact]

@@ -21,8 +21,8 @@ namespace Denntah.Sql
         {
             TypeDescriber td = TypeHandler.Get(data);
 
-            string columns = td.Readable.Select(x => x.DbName).Aggregate((a, b) => a + "," + b);
-            string values = td.Readable.Select(x => "@" + x.Property.Name).Aggregate((a, b) => a + "," + b);
+            string columns = td.WriteableColumns.Select(x => x.DbName).Aggregate((a, b) => a + "," + b);
+            string values = td.WriteableColumns.Select(x => "@" + x.Property.Name).Aggregate((a, b) => a + "," + b);
 
             string sql = $"INSERT INTO {table} ({columns}) VALUES ({values})";
 
@@ -47,8 +47,8 @@ namespace Denntah.Sql
         {
             TypeDescriber td = TypeHandler.Get(data);
 
-            string columns = td.Readable.Select(x => x.DbName).Aggregate((a, b) => a + "," + b);
-            string values = td.Readable.Select(x => "@" + x.Property.Name).Aggregate((a, b) => a + "," + b);
+            string columns = td.WriteableColumns.Select(x => x.DbName).Aggregate((a, b) => a + "," + b);
+            string values = td.WriteableColumns.Select(x => "@" + x.Property.Name).Aggregate((a, b) => a + "," + b);
 
             string sql = $"INSERT INTO {table} ({columns}) VALUES ({values}) RETURNING {pk}";
 
@@ -71,8 +71,8 @@ namespace Denntah.Sql
 
             if (generated.Count() > 0)
             {
-                string columns = td.Readable.Select(x => x.DbName).Aggregate((a, b) => a + "," + b);
-                string values = td.Readable.Select(x => "@" + x.Property.Name).Aggregate((a, b) => a + "," + b);
+                string columns = td.WriteableColumns.Select(x => x.DbName).Aggregate((a, b) => a + "," + b);
+                string values = td.WriteableColumns.Select(x => "@" + x.Property.Name).Aggregate((a, b) => a + "," + b);
                 string returns = string.Join(",", generated.Select(x => x.DbName));
 
                 string sql = $"INSERT INTO {td.Table} ({columns}) VALUES ({values}) RETURNING {returns}";

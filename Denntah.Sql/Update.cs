@@ -23,7 +23,7 @@ namespace Denntah.Sql
         {
             TypeDescriber td = TypeHandler.Get(data);
 
-            string set = td.Readable.Select(x => x.DbName + "=@" + x.Property.Name).Aggregate((a, b) => a + "," + b);
+            string set = td.WriteableColumns.Select(x => x.DbName + "=@" + x.Property.Name).Aggregate((a, b) => a + "," + b);
 
             string sql = $"UPDATE {table} SET {set} WHERE {where}";
 

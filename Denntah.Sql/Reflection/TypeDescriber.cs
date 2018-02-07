@@ -43,12 +43,12 @@ namespace Denntah.Sql.Reflection
             get { return this.Where(x => !x.IsKey); }
         }
 
-        public IEnumerable<PropertyDescriber> Writeable
+        public IEnumerable<PropertyDescriber> WriteableProperties
         {
             get { return this.Where(x => x.IsWriteable); }
         }
 
-        public IEnumerable<PropertyDescriber> Readable
+        public IEnumerable<PropertyDescriber> WriteableColumns
         {
             get { return this.Where(x => x.IsReadable && !x.IsGenerated); }
         }
