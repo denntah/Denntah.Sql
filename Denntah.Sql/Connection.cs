@@ -26,6 +26,18 @@ namespace Denntah.Sql
             IDbCommand cmd = conn.Prepare(sql, transaction);
             cmd.ApplyParameters(args);
 
+            return conn.Query<T>(cmd);
+        }
+
+        /// <summary>
+        /// Read data from database
+        /// </summary>
+        /// <typeparam name="T">class to map data to</typeparam>
+        /// <param name="conn">A connection</param>
+        /// <param name="cmd">Command to be executed</param>
+        /// <returns>List of T</returns>
+        public static IEnumerable<T> Query<T>(this IDbConnection conn, IDbCommand cmd) where T : new()
+        {
             using (var reader = cmd.ExecuteReader())
             {
                 List<string> columns = new List<string>();

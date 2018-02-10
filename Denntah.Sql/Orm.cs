@@ -13,6 +13,36 @@ namespace Denntah.Sql
     public static class OrmExtension
     {
         /// <summary>
+        /// Get a object of T by its ID
+        /// </summary>
+        /// <typeparam name="T">type of object</typeparam>
+        /// <param name="conn">A connection</param>
+        /// <param name="ids">Id(s) in same order as marked with KeyAttribute</param>
+        /// <returns>T</returns>
+        public static T Get<T>(this IDbConnection conn, params object[] ids) 
+            where T : class, new()
+        {
+            TypeDescriber td = TypeHandler.Get<T>();
+            PropertyDescriber[] keys = td.Keys.ToArray();
+
+            if (keys.Length == 0)
+                throw new ArgumentException("T must be a type with properties decorated with KeyAttribute");
+            else if (keys.Length != ids.Length)
+                throw new ArgumentException(string.Format("KeyAttribute-count ({0}) and argument-count ({1}) must match", keys.Length, ids.Length));
+            else
+            {
+                string where = string.Join(",", keys.Select(x => x.DbName + "=@" + x.Property.Name));
+                string sql = $"SELECT * FROM {td.Table} WHERE {where}";
+
+                IDbCommand cmd = conn.Prepare(sql);
+                for (var i = 0; i < ids.Length; i++)
+                    cmd.ApplyParameter(keys[i].Property.Name, ids[i]);
+
+                return conn.Query<T>(cmd).FirstOrDefault();
+            }
+        }
+
+        /// <summary>
         /// Insert object to table and populates key properties with generated values from database
         /// </summary>
         /// <typeparam name="T">type of object</typeparam>

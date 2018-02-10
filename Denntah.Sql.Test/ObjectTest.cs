@@ -1,4 +1,5 @@
-﻿using Denntah.Sql.Test.Models;
+﻿using Denntah.Sql.Reflection;
+using Denntah.Sql.Test.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,37 @@ namespace Denntah.Sql.Test
 {
     public class ObjectTest
     {
+        [Fact]
+        public void Get()
+        {
+            Person person = null;
+            int id = 0;
+
+            using (var db = DatabaseFactory.CreatePostgres())
+            {
+                id = db.Insert<int>("persons", new Person { FirstName = "Foo" }, "id");
+                person = db.Get<Person>(id);
+            }
+
+            Assert.NotNull(person);
+            Assert.Equal(id, person.Id);
+            Assert.Equal("Foo", person.FirstName);
+        }
+
+        [Fact]
+        public void GetObjectWithoutKey()
+        {
+            using (var db = DatabaseFactory.CreatePostgres())
+                Assert.Throws<ArgumentException>(() => db.Get<Document>(Guid.NewGuid()));
+        }
+
+        [Fact]
+        public void GetObjectWhereKeyCountDoesntMatch()
+        {
+            using (var db = DatabaseFactory.CreatePostgres())
+                Assert.Throws<ArgumentException>(() => db.Get<Person>(1, 2));
+        }
+
         [Fact]
         public void InsertObject()
         {
