@@ -118,6 +118,12 @@ public class Person
 }
 ```
 
+### Get
+```
+c.Get<Person>(1);
+``` 
+will read table "persons" and return an object of ```Person``` from the database where id is 1.
+
 ### Insert
 ```
 c.Insert(person);
