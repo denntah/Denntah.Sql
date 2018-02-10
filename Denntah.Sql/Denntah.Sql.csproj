@@ -10,9 +10,14 @@
     <PackageProjectUrl>https://github.com/denntah/Denntah.Sql</PackageProjectUrl>
     <RepositoryUrl>https://github.com/denntah/Denntah.Sql</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>mapper,orm,database</PackageTags>
+    <PackageTags>mapper,orm,database,sql</PackageTags>
     <PackageReleaseNotes />
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Version>1.0.2</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.0\Denntah.Sql.xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>
