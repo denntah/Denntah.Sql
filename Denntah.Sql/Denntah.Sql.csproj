@@ -6,12 +6,12 @@
     <Company />
     <Description>Database mapper that simplifies all kind of database communication. Currently just supports PostgreSQL.</Description>
     <Copyright>2018 Dennis "denntah" Ahlquist</Copyright>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/denntah/Denntah.Sql/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/denntah/Denntah.Sql</PackageProjectUrl>
     <RepositoryUrl>https://github.com/denntah/Denntah.Sql</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>mapper,orm,database,sql</PackageTags>
-    <PackageReleaseNotes />
+    <PackageReleaseNotes>Included XML documentation. Added Get&lt;T&gt;(id) method.</PackageReleaseNotes>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Version>1.0.3</Version>
   </PropertyGroup>
