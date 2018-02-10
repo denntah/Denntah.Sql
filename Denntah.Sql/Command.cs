@@ -6,10 +6,13 @@ using System.Text;
 
 namespace Denntah.Sql
 {
+    /// <summary>
+    /// Internal extension for commands
+    /// </summary>
     internal static class CommandExtension
     {
         /// <summary>
-        /// Creates a command and makes sure connection is open
+        /// Prepares a command and makes sure connection is open
         /// </summary>
         /// <param name="conn">A connection</param>
         /// <param name="sql">SQL-command to be executed</param>

@@ -13,7 +13,7 @@
     <PackageTags>mapper,orm,database,sql</PackageTags>
     <PackageReleaseNotes />
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
