@@ -31,7 +31,7 @@ namespace Denntah.Sql
                 throw new ArgumentException(string.Format("KeyAttribute-count ({0}) and argument-count ({1}) must match", keys.Length, ids.Length));
             else
             {
-                string where = string.Join(",", keys.Select(x => x.DbName + "=@" + x.Property.Name));
+                string where = string.Join(" AND ", keys.Select(x => x.DbName + "=@" + x.Property.Name));
                 string sql = $"SELECT * FROM {td.Table} WHERE {where}";
 
                 IDbCommand cmd = conn.Prepare(sql);
