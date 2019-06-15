@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
+using System.Linq;
 
 namespace Denntah.Sql
 {
@@ -63,6 +63,33 @@ namespace Denntah.Sql
                     value = value.ToString();
 
                 cmd.ApplyParameter(property.Property.Name, value ?? DBNull.Value);
+            }
+        }
+
+        /// <summary>
+        /// Add parameters to an indexed bulk command
+        /// </summary>
+        /// <param name="cmd">Command to add parameters to</param>
+        /// <param name="argsList">List of objects that holds the parameters</param>
+        public static void ApplyParameters(this IDbCommand cmd, IEnumerable<object> argsList = null)
+        {
+            if (argsList == null) return;
+
+            var typeDescriber = TypeHandler.Get(argsList.First());
+
+            int i = 0;
+            foreach (var args in argsList)
+            {
+                foreach (var property in typeDescriber.Arguments)
+                {
+                    var value = typeDescriber.GetValue(property.Property.Name, args);
+
+                    if (property.Property.PropertyType.IsEnum)
+                        value = value.ToString();
+
+                    cmd.ApplyParameter(property.Property.Name + i, value ?? DBNull.Value);
+                }
+                i++;
             }
         }
     }

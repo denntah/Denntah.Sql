@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 
 namespace Denntah.Sql
 {
@@ -19,7 +18,7 @@ namespace Denntah.Sql
         /// <param name="conn">A connection</param>
         /// <param name="ids">Id(s) in same order as marked with KeyAttribute</param>
         /// <returns>T</returns>
-        public static T Get<T>(this IDbConnection conn, params object[] ids) 
+        public static T Get<T>(this IDbConnection conn, params object[] ids)
             where T : class, new()
         {
             TypeDescriber td = TypeHandler.Get<T>();
@@ -43,7 +42,7 @@ namespace Denntah.Sql
         }
 
         /// <summary>
-        /// Insert object to table and populates key properties with generated values from database
+        /// Insert object in table. Will populate generated fields with values from database.
         /// </summary>
         /// <typeparam name="T">type of object</typeparam>
         /// <param name="conn">A connection</param>
@@ -73,6 +72,94 @@ namespace Denntah.Sql
             }
             else
                 return conn.Insert(td.Table, data, transaction);
+        }
+
+        /// <summary>
+        /// Insert objects in table. Will not populate generated fields.
+        /// </summary>
+        /// <typeparam name="T">type of object</typeparam>
+        /// <param name="conn">A connection</param>
+        /// <param name="dataList">List of objects containing the data</param>
+        /// <param name="transaction">Transaction to associate with the command</param>
+        /// <returns>Rows affected</returns>
+        public static int Insert<T>(this IDbConnection conn, IEnumerable<T> dataList, IDbTransaction transaction = null)
+            where T : class
+        {
+            TypeDescriber td = TypeHandler.Get<T>();
+
+            return conn.Insert(td.Table, dataList, transaction);
+        }
+
+        /// <summary>
+        /// Insert object in table or ignores if exists
+        /// </summary>
+        /// <typeparam name="T">type of object</typeparam>
+        /// <param name="conn">A connection</param>
+        /// <param name="data">Object containing the data</param>
+        /// <param name="transaction">Transaction to associate with the command</param>
+        /// <returns>Rows affected</returns>
+        public static int InsertIfMissing<T>(this IDbConnection conn, T data, IDbTransaction transaction = null)
+            where T : class
+        {
+            return conn.InsertIfMissing<T>(new List<T> { data }, transaction);
+        }
+
+        /// <summary>
+        /// Insert objects in table or ignores if exists
+        /// </summary>
+        /// <typeparam name="T">type of object</typeparam>
+        /// <param name="conn">A connection</param>
+        /// <param name="dataList">List of objects containing the data</param>
+        /// <param name="transaction">Transaction to associate with the command</param>
+        /// <returns>Rows affected</returns>
+        public static int InsertIfMissing<T>(this IDbConnection conn, IEnumerable<T> dataList, IDbTransaction transaction = null)
+            where T : class
+        {
+            TypeDescriber td = TypeHandler.Get<T>();
+            IEnumerable<PropertyDescriber> keys = td.Keys;
+
+            if (keys.Count() > 0)
+            {
+                return conn.InsertIfMissing(td.Table, dataList, string.Join(",", keys.Select(x => x.DbName)), transaction);
+            }
+            else
+                throw new ArgumentException("Invalid object. Atleast one property must be marked with KeyAttribute on type " + dataList.First().GetType().Name);
+        }
+
+        /// <summary>
+        /// Insert object in table or update if exists
+        /// </summary>
+        /// <typeparam name="T">type of object</typeparam>
+        /// <param name="conn">A connection</param>
+        /// <param name="data">Object containing the data</param>
+        /// <param name="transaction">Transaction to associate with the command</param>
+        /// <returns>true when inserted, false when updated</returns>
+        public static bool Upsert<T>(this IDbConnection conn, T data, IDbTransaction transaction = null)
+            where T : class
+        {
+            return conn.Upsert<T>(new List<T> { data }, transaction).First();
+        }
+
+        /// <summary>
+        /// Insert objects in table or updates if exists
+        /// </summary>
+        /// <typeparam name="T">type of object</typeparam>
+        /// <param name="conn">A connection</param>
+        /// <param name="dataList">List of objects containing the data</param>
+        /// <param name="transaction">Transaction to associate with the command</param>
+        /// <returns>List of true when inserted, false when updated</returns>
+        public static IEnumerable<bool> Upsert<T>(this IDbConnection conn, IEnumerable<T> dataList, IDbTransaction transaction = null)
+            where T : class
+        {
+            TypeDescriber td = TypeHandler.Get<T>();
+            IEnumerable<PropertyDescriber> keys = td.Keys;
+
+            if (keys.Count() > 0)
+            {
+                return conn.Upsert(td.Table, dataList, string.Join(",", keys.Select(x => x.DbName)), transaction);
+            }
+            else
+                throw new ArgumentException("Invalid object. Atleast one property must be marked with KeyAttribute on type " + dataList.First().GetType().Name);
         }
 
         /// <summary>

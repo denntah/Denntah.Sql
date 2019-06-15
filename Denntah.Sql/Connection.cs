@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
 
 namespace Denntah.Sql
 {
@@ -132,15 +131,28 @@ namespace Denntah.Sql
         /// <returns>Rows affected</returns>
         public static int Insert(this IDbConnection conn, string table, object data, IDbTransaction transaction = null)
         {
-            TypeDescriber td = TypeHandler.Get(data);
+            return conn.Insert(table, new List<Object> { data }, transaction); 
+        }
 
-            string columns = td.WriteableColumns.Select(x => x.DbName).Aggregate((a, b) => a + "," + b);
-            string values = td.WriteableColumns.Select(x => "@" + x.Property.Name).Aggregate((a, b) => a + "," + b);
+        /// <summary>
+        /// Insert rows in table
+        /// </summary>
+        /// <param name="conn">A connection</param>
+        /// <param name="table">Name of table to insert into</param>
+        /// <param name="dataList">List of objects containing the data</param>
+        /// <param name="transaction">Transaction to associate with the command</param>
+        /// <returns>Rows affected</returns>
+        public static int Insert(this IDbConnection conn, string table, IEnumerable<object> dataList, IDbTransaction transaction = null)
+        {
+            TypeDescriber td = TypeHandler.Get(dataList.First());
 
-            string sql = $"INSERT INTO {table} ({columns}) VALUES ({values})";
+            string columns = string.Join(",", td.WriteableColumns.Select(x => x.DbName));
+            string values = string.Join(",", dataList.Select((data, i) => $"({string.Join(",", td.WriteableColumns.Select(x => "@" + x.Property.Name + i))})"));
+
+            string sql = $"INSERT INTO {table} ({columns}) VALUES {values}";
 
             IDbCommand cmd = conn.Prepare(sql, transaction);
-            cmd.ApplyParameters(data);
+            cmd.ApplyParameters(dataList);
 
             return cmd.ExecuteNonQuery();
         }
@@ -166,6 +178,87 @@ namespace Denntah.Sql
             string sql = $"INSERT INTO {table} ({columns}) VALUES ({values}) RETURNING {pk}";
 
             return conn.Scalar<Tid>(sql, data, transaction);
+        }
+
+        /// <summary>
+        /// Insert row in table or ignores if exists
+        /// </summary>
+        /// <param name="conn">A connection</param>
+        /// <param name="table">Name of table to insert into</param>
+        /// <param name="data">Object containing the data</param>
+        /// <param name="pk">Name of primary key field</param>
+        /// <param name="transaction">Transaction to associate with the command</param>
+        /// <returns>Rows affected</returns>
+        public static int InsertIfMissing(this IDbConnection conn, string table, object data, string pk, IDbTransaction transaction = null)
+        {
+            return conn.InsertIfMissing(table, new List<Object> { data }, pk, transaction); 
+        }
+
+        /// <summary>
+        /// Insert rows in table or ignores if exists
+        /// </summary>
+        /// <param name="conn">A connection</param>
+        /// <param name="table">Name of table to insert into</param>
+        /// <param name="dataList">List of objects containing the data</param>
+        /// <param name="pk">Name of primary key field</param>
+        /// <param name="transaction">Transaction to associate with the command</param>
+        /// <returns>Rows affected</returns>
+        public static int InsertIfMissing(this IDbConnection conn, string table, IEnumerable<object> dataList, string pk, IDbTransaction transaction = null)
+        {
+            TypeDescriber td = TypeHandler.Get(dataList.First());
+
+            string columns = string.Join(",", td.WriteableColumns.Select(x => x.DbName));
+            string values = string.Join(",", dataList.Select((data, i) => $"({string.Join(",", td.WriteableColumns.Select(x => "@" + x.Property.Name + i))})"));
+
+            string sql = $@"
+                INSERT INTO {table} ({columns}) VALUES {values}
+                ON CONFLICT ({pk}) DO NOTHING";
+
+            IDbCommand cmd = conn.Prepare(sql, transaction);
+            cmd.ApplyParameters(dataList);
+
+            return cmd.ExecuteNonQuery();
+        }
+
+        /// <summary>
+        /// Insert row in table or update if exists
+        /// </summary>
+        /// <param name="conn">A connection</param>
+        /// <param name="table">Name of table to upsert into</param>
+        /// <param name="data">Object containing the data</param>
+        /// <param name="pk">Name of primary key field</param>
+        /// <param name="transaction">Transaction to associate with the command</param>
+        /// <returns>true when inserted, false when updated</returns>
+        public static bool Upsert(this IDbConnection conn, string table, object data, string pk, IDbTransaction transaction = null)
+        {
+            return conn.Upsert(table, new List<Object> { data }, pk, transaction).First();
+        }
+
+        /// <summary>
+        /// Insert rows in table or updates if exists
+        /// </summary>
+        /// <param name="conn">A connection</param>
+        /// <param name="table">Name of table to upsert into</param>
+        /// <param name="dataList">List of objects containing the data</param>
+        /// <param name="pk">Name of primary key field</param>
+        /// <param name="transaction">Transaction to associate with the command</param>
+        /// <returns>List of true when inserted, false when updated</returns>
+        public static IEnumerable<bool> Upsert(this IDbConnection conn, string table, IEnumerable<object> dataList, string pk, IDbTransaction transaction = null)
+        {
+            TypeDescriber td = TypeHandler.Get(dataList.First());
+
+            string columns = string.Join(",", td.WriteableColumns.Select(x => x.DbName));
+            string values = string.Join(",", dataList.Select((data, i) => $"({string.Join(",", td.WriteableColumns.Select(x => "@" + x.Property.Name + i))})"));
+            string set = string.Join(",", td.WriteableColumns.Select(x => x.DbName + "=excluded." + x.DbName));
+
+            string sql = $@"
+                INSERT INTO {table} ({columns}) VALUES {values}
+                ON CONFLICT ({pk}) DO UPDATE SET {set} RETURNING (xmax = 0) as inserted";
+
+            IDbCommand cmd = conn.Prepare(sql, transaction);
+            cmd.ApplyParameters(dataList);
+
+            return conn.ScalarList<bool>(cmd);
         }
 
         /// <summary>
@@ -222,6 +315,24 @@ namespace Denntah.Sql
             cmd.ApplyParameters(data);
 
             return (T)cmd.ExecuteScalar();
+        }
+
+        /// <summary>
+        /// Read first value of all rows
+        /// </summary>
+        /// <typeparam name="T">type to read</typeparam>
+        /// <param name="conn">A connection</param>
+        /// <param name="cmd">Command to be executed</param>
+        /// <returns>List of T</returns>
+        public static IEnumerable<T> ScalarList<T>(this IDbConnection conn, IDbCommand cmd)
+        {
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    yield return (T)reader[0];
+                }
+            }
         }
 
         /// <summary>
