@@ -22,6 +22,20 @@ public enum Gender
     Male,
     Female
 }
+
+public class Document
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public byte[] Data { get; set; }
+    public DateTime DateCreated { get; set; }
+}
+
+public class Car
+{
+    public string Id { get; set; }
+    public string Make { get; set; }
+}
 ```
 
 Querying database and map to model, assuming ```c``` is of type ```IDbConnection```:
@@ -81,11 +95,44 @@ var person = new Person
 
 person.Id = c.Insert<int>("persons", person, "id");
 ```
+### InsertIfMissing
+inserts ```car``` into table cars if id="ABC123" is missing, otherwise ignores. Returns rows affected.
+```
+Car car = new Car
+{
+    Id = "ABC123",
+    Make = "Saab 9000"
+};
+
+// Will insert
+c.InsertIfMissing("cars", car, "id");
+
+// No effect and wont throw PK error
+car.Make = "Volvo V70";
+c.InsertIfMissing("cars", car);
+```
 
 ### Update
 updates table persons and set ```person``` where id=1
 
 ```c.Update("persons", person, "id=@Id", new { Id = 1 });```
+
+### Upsert
+Inserts ```car``` into table cars if id="ABC123" is missing, otherwise updates. Returns true for inserted, false for updated.
+```
+Car car = new Car
+{
+    Id = "ABC123",
+    Make = "Saab 9000"
+};
+
+//Will insert
+c.Upsert("cars", car, "id");
+
+// Will update
+car.Make = "Volvo V70";
+c.Upsert("cars", car, "id");
+```
 
 ### Delete
 deletes from table persons where first_name="Dennis"
@@ -96,6 +143,21 @@ deletes from table persons where first_name="Dennis"
 execute anything, returning rows affected
 
 ```c.Execute("TRUNCATE persons");```
+
+
+## Bulk
+Insert, InsertIfMissing and Upsert all support bulk loading. Just pass a list.
+```
+int rowsAffected = c.Insert("cars", carList);
+```
+```
+int rowsAffected = c.InsertIfMissing("cars", carList, "id")
+```
+```
+var result = c.Upsert("cars", carList, "id").ToList();
+int insertCount = result.Count(inserted => inserted);
+int updateCount = result.Count(inserted => !inserted);
+```
 
 
 ## Decorated classes
@@ -116,6 +178,14 @@ public class Person
     [Generated]
     public DateTime? DateCreated { get; set; }
 }
+
+[Table("cars")]
+public class Car
+{
+    [Key]
+    public string Id { get; set; }
+    public string Make { get; set; }
+}
 ```
 
 ### Get
@@ -130,11 +200,23 @@ c.Insert(person);
 ``` 
 will insert into table "persons" and map properties marked with ```Generated``` to the object.
 
+### InsertIfMissing
+```
+c.InsertIfMissing(car);
+```
+inserts ```car``` into table cars if ```Key``` property is missing, otherwise ignores.
+
 ### Update
 ```
 c.Update(person);
 ``` 
 updates table "persons" matching the key field(s).
+
+### Upsert
+```
+c.Upsert(car);
+```
+Inserts ```car``` into table cars if ```Key``` property is missing, otherwise updates.
 
 ### Delete
 ```

@@ -7,6 +7,7 @@ using Xunit;
 
 namespace Denntah.Sql.Test
 {
+    [Collection("DBTest")]
     public class DocumentTest : IDisposable
     {
         private IDbConnection _db;
@@ -14,7 +15,7 @@ namespace Denntah.Sql.Test
 
         public DocumentTest()
         {
-            _db = DatabaseFactory.CreatePostgres();
+            _db = DatabaseFactory.Connect();
 
             _data = new Document
             {

@@ -2,11 +2,11 @@ using Denntah.Sql.Test.Models;
 using System;
 using System.Data;
 using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace Denntah.Sql.Test
 {
+    [Collection("DBTest")]
     public class PersonTest : IDisposable
     {
         private IDbConnection _db;
@@ -14,7 +14,7 @@ namespace Denntah.Sql.Test
 
         public PersonTest()
         {
-            _db = DatabaseFactory.CreatePostgres();
+            _db = DatabaseFactory.Connect();
 
             _data = new Person
             {
@@ -31,6 +31,26 @@ namespace Denntah.Sql.Test
             int id = _db.Insert<int>("persons", _data, "id");
 
             Assert.True(id > 0);
+        }
+
+        [Fact]
+        public void Upsert()
+        {
+            _data.FirstName = "Gandalf";
+            _data.Age = 1000;
+            _data.Id = _db.Insert<int>("persons", _data, "id");
+
+            // Will create new as pk is generated
+            _data.FirstName = "Saruman";
+            _data.Age = 2000;
+            _db.Upsert("persons", _data, "id");
+
+            Person person = _db.Query<Person>("SELECT * FROM persons WHERE id=@Id", _data).FirstOrDefault();
+
+            Assert.NotNull(person);
+            Assert.Equal(_data.Id, person.Id);
+            Assert.NotEqual(person.FirstName, _data.FirstName);
+            Assert.NotEqual(person.Age, _data.Age);
         }
 
         [Fact]

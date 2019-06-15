@@ -1,4 +1,6 @@
 Denntah.Sql.sln
+Denntah.Sql.Test.sln
 .vs
 **/bin
 **/obj
+.DS_Store
